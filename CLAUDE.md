@@ -29,6 +29,7 @@ Single bash script: `pdfclean`. Symlinked from `/usr/local/bin/pdfclean`.
 - No recursive directory walking by design. User controls which files are processed.
 - Progress output uses ANSI inverted colors for visibility in terminal.
 
-## Future direction
+## Key documents
 
-Replace `cpdfsqueeze` dependency with an open-source backend (pikepdf/qpdf pipeline) so the tool can be freely distributed.
+- **VISION.md** — where the project is headed, success criteria, open questions. Read before proposing new features.
+- **TODO.md** — milestones and tasks. Update as work is completed. All development is guided by this file.
