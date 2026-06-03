@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+# Check if any arguments were provided
+if [ -z "$1" ]; then
+    files=( *.pdf )
+    echo "No argument supplied, assuming '*.pdf'"
+else
+    files=("$@")
+fi
+
+# Display files to be processed
+echo "Files to process: ${files[@]}"
+
+# Count total files correctly
+n=${#files[@]}
+
+# Process each file
+for ((i=1; i<=n; i++)); do
+    file="${files[i-1]}"
+    
+    # Skip if file doesn't exist
+    if [ ! -f "$file" ]; then
+        echo "Warning: '$file' not found, skipping..."
+        continue
+    fi
+    
+    # Print progress with inverted colors
+    printf "\033[7m\nProcessing %s (%d of %d)\033[27m\n" "${file}" $i $n
+    
+    # Get initial size
+    initial_size=$(stat -f%z "$file" 2>/dev/null || stat --format="%s" "$file")
+    
+    # Compress the PDF
+    if cpdfsqueeze "${file}" "${file}.tmp"; then
+        final_size=$(stat -f%z "${file}.tmp" 2>/dev/null || stat --format="%s" "${file}.tmp")
+        
+        # Only replace if the file actually got smaller
+        if [ "$final_size" -lt "$initial_size" ]; then
+            mv "${file}.tmp" "${file}"
+            reduction=$((initial_size - final_size))
+            percent=$(awk "BEGIN {printf \"%.1f\", ($reduction / $initial_size) * 100}")
+            echo "Compressed: reduced by $reduction bytes ($percent%)"
+        else
+            rm "${file}.tmp"
+            echo "No size reduction achieved - keeping original file"
+        fi
+    else
+        echo "Error: Failed to compress '$file'"
+        [ -f "${file}.tmp" ] && rm "${file}.tmp"
+    fi
+done
+
+echo -e "\nProcessing completed for $n files"
+exit 0
