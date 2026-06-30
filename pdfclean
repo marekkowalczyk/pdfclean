@@ -4,15 +4,17 @@ VERSION="0.1.0"
 
 usage() {
     cat <<EOF
-Usage: pdfclean [OPTIONS] [FILE... | . | --all]
+Usage: pdfclean [OPTIONS] [-- ] [FILE... | . | --all]
 
 Compress PDF files in-place using cpdfsqueeze.
 
 Options:
-  --all, -a     Process all *.pdf / *.PDF files in the current directory
-  --dry-run     Report what would be compressed without modifying files
-  --version     Print version and exit
-  --help        Print this help and exit
+  --all, -a        Process all *.pdf / *.PDF files in the current directory
+  --dry-run, -n    Report what would be compressed without modifying files
+  --quiet, -q      Suppress all non-error output
+  --version        Print version and exit
+  --help           Print this help and exit
+  --               End of options; remaining args treated as filenames
 
 Passing . is equivalent to --all.
 
@@ -20,36 +22,52 @@ Examples:
   pdfclean .              # compress all *.pdf / *.PDF in current dir
   pdfclean -a             # same
   pdfclean a.pdf b.pdf    # compress specific files
-  pdfclean --dry-run .    # preview without changing files
+  pdfclean -n .           # preview without changing files
+  pdfclean -- -odd.pdf    # process a file whose name starts with -
 EOF
 }
 
+# TTY check: use formatting only when stdout is a terminal
+if [ -t 1 ]; then
+    fmt_header() { printf "\033[7m\nProcessing %s (%d of %d)\033[27m\n" "$1" "$2" "$3"; }
+else
+    fmt_header() { printf "\nProcessing %s (%d of %d)\n" "$1" "$2" "$3"; }
+fi
+
 dry_run=0
+quiet=0
 exit_code=0
+end_of_opts=0
 
 # Parse flags
 args=()
 all=0
 for arg in "$@"; do
+    if [ "$end_of_opts" -eq 1 ]; then
+        args+=("$arg")
+        continue
+    fi
     case "$arg" in
-        --help)       usage; exit 0 ;;
-        --version)    echo "pdfclean $VERSION"; exit 0 ;;
-        --dry-run)    dry_run=1 ;;
-        --all|-a|.)   all=1 ;;
-        *)            args+=("$arg") ;;
+        --help)          usage; exit 0 ;;
+        --version)       echo "pdfclean $VERSION"; exit 0 ;;
+        --dry-run|-n)    dry_run=1 ;;
+        --quiet|-q)      quiet=1 ;;
+        --all|-a|.)      all=1 ;;
+        --)              end_of_opts=1 ;;
+        *)               args+=("$arg") ;;
     esac
 done
+
+log()  { [ "$quiet" -eq 0 ] && echo "$@"; }
+logf() { [ "$quiet" -eq 0 ] && printf "$@"; }
 
 # Determine file list
 if [ "$all" -eq 1 ] && [ ${#args[@]} -gt 0 ]; then
     echo "Error: cannot combine . / --all with explicit filenames" >&2
     exit 1
 elif [ "$all" -eq 1 ]; then
-    files=( *.pdf *.PDF )
-    # Remove unmatched globs (bash leaves them literal when nullglob is off)
-    files=( "${files[@]}" )
     expanded=()
-    for f in "${files[@]}"; do
+    for f in *.pdf *.PDF; do
         [ -f "$f" ] && expanded+=("$f")
     done
     files=("${expanded[@]}")
@@ -82,9 +100,14 @@ for f in "${files[@]}"; do
 done
 files=("${unique_files[@]}")
 
-echo "Files to process: ${files[@]}"
+log "Files to process: ${files[*]}"
 
 n=${#files[@]}
+tmpfile=""
+
+# Clean up temp file on exit/interrupt
+cleanup() { [ -n "$tmpfile" ] && rm -f "$tmpfile"; }
+trap cleanup INT TERM EXIT
 
 for ((i=1; i<=n; i++)); do
     file="${files[i-1]}"
@@ -95,47 +118,59 @@ for ((i=1; i<=n; i++)); do
         continue
     fi
 
-    printf "\033[7m\nProcessing %s (%d of %d)\033[27m\n" "${file}" $i $n
+    [ "$quiet" -eq 0 ] && fmt_header "${file}" $i $n
 
     initial_size=$(stat -f%z "$file" 2>/dev/null || stat --format="%s" "$file")
 
+    # Create temp file in same directory as the source (same filesystem = atomic mv)
+    dir=$(dirname "$file")
+    tmpfile=$(mktemp "${dir}/.pdfclean.XXXXXX")
+
     if [ "$dry_run" -eq 1 ]; then
-        if cpdfsqueeze "${file}" "${file}.tmp" 2>/dev/null; then
-            final_size=$(stat -f%z "${file}.tmp" 2>/dev/null || stat --format="%s" "${file}.tmp")
-            rm "${file}.tmp"
+        if cpdfsqueeze "${file}" "$tmpfile" >/dev/null 2>&1; then
+            final_size=$(stat -f%z "$tmpfile" 2>/dev/null || stat --format="%s" "$tmpfile")
             if [ "$final_size" -lt "$initial_size" ]; then
                 reduction=$((initial_size - final_size))
                 percent=$(awk "BEGIN {printf \"%.1f\", ($reduction / $initial_size) * 100}")
-                echo "[dry-run] Would reduce by $reduction bytes ($percent%)"
+                log "[dry-run] Would reduce by $reduction bytes ($percent%)"
             else
-                echo "[dry-run] No size reduction would be achieved"
+                log "[dry-run] No size reduction would be achieved"
             fi
         else
-            [ -f "${file}.tmp" ] && rm "${file}.tmp"
             echo "Error: cpdfsqueeze failed on '$file'" >&2
             exit_code=1
         fi
+        rm -f "$tmpfile"
+        tmpfile=""
         continue
     fi
 
-    if cpdfsqueeze "${file}" "${file}.tmp"; then
-        final_size=$(stat -f%z "${file}.tmp" 2>/dev/null || stat --format="%s" "${file}.tmp")
+    if [ "$quiet" -eq 1 ]; then
+        cpdfsqueeze "${file}" "$tmpfile" >/dev/null 2>&1
+    else
+        cpdfsqueeze "${file}" "$tmpfile"
+    fi
+    if [ $? -eq 0 ]; then
+        final_size=$(stat -f%z "$tmpfile" 2>/dev/null || stat --format="%s" "$tmpfile")
 
         if [ "$final_size" -lt "$initial_size" ]; then
-            mv "${file}.tmp" "${file}"
+            mv "$tmpfile" "${file}"
+            tmpfile=""
             reduction=$((initial_size - final_size))
             percent=$(awk "BEGIN {printf \"%.1f\", ($reduction / $initial_size) * 100}")
-            echo "Compressed: reduced by $reduction bytes ($percent%)"
+            log "Compressed: reduced by $reduction bytes ($percent%)"
         else
-            rm "${file}.tmp"
-            echo "No size reduction achieved - keeping original file"
+            rm -f "$tmpfile"
+            tmpfile=""
+            log "No size reduction achieved - keeping original file"
         fi
     else
         echo "Error: Failed to compress '$file'" >&2
         exit_code=1
-        [ -f "${file}.tmp" ] && rm "${file}.tmp"
+        rm -f "$tmpfile"
+        tmpfile=""
     fi
 done
 
-echo -e "\nProcessing completed for $n files"
+log "$(printf '\nProcessing completed for %d files' $n)"
 exit $exit_code
