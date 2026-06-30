@@ -31,5 +31,6 @@ Single bash script: `pdfclean`. Symlinked from `/usr/local/bin/pdfclean`.
 
 ## Key documents
 
-- **VISION.md** — where the project is headed, success criteria, open questions. Read before proposing new features.
-- **TODO.md** — milestones and tasks. Update as work is completed. All development is guided by this file.
+- **dev/VISION.md** — where the project is headed, success criteria, open questions. Read before proposing new features.
+- **dev/TODO.md** — milestones and tasks. Update as work is completed. All development is guided by this file.
+- **dev/AAR.md** — after action reviews, continuous improvement log.
