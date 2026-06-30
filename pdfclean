@@ -112,6 +112,9 @@ trap cleanup INT TERM EXIT
 for ((i=1; i<=n; i++)); do
     file="${files[i-1]}"
 
+    # Normalize filenames starting with - so tools don't treat them as flags
+    [[ "$file" == -* ]] && file="./$file"
+
     if [ ! -f "$file" ]; then
         echo "Warning: '$file' not found, skipping..." >&2
         exit_code=1
