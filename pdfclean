@@ -22,6 +22,7 @@ EOF
 }
 
 dry_run=0
+exit_code=0
 
 # Parse flags
 args=()
@@ -51,7 +52,7 @@ for f in "${files[@]}"; do
         [ "$s" = "$f" ] && already=1 && break
     done
     if [ "$already" -eq 1 ]; then
-        echo "Warning: '$f' specified more than once, skipping duplicate"
+        echo "Warning: '$f' specified more than once, skipping duplicate" >&2
     else
         seen+=("$f")
         unique_files+=("$f")
@@ -67,7 +68,8 @@ for ((i=1; i<=n; i++)); do
     file="${files[i-1]}"
 
     if [ ! -f "$file" ]; then
-        echo "Warning: '$file' not found, skipping..."
+        echo "Warning: '$file' not found, skipping..." >&2
+        exit_code=1
         continue
     fi
 
@@ -88,7 +90,8 @@ for ((i=1; i<=n; i++)); do
             fi
         else
             [ -f "${file}.tmp" ] && rm "${file}.tmp"
-            echo "[dry-run] cpdfsqueeze failed on '$file'"
+            echo "Error: cpdfsqueeze failed on '$file'" >&2
+            exit_code=1
         fi
         continue
     fi
@@ -106,10 +109,11 @@ for ((i=1; i<=n; i++)); do
             echo "No size reduction achieved - keeping original file"
         fi
     else
-        echo "Error: Failed to compress '$file'"
+        echo "Error: Failed to compress '$file'" >&2
+        exit_code=1
         [ -f "${file}.tmp" ] && rm "${file}.tmp"
     fi
 done
 
 echo -e "\nProcessing completed for $n files"
-exit 0
+exit $exit_code
