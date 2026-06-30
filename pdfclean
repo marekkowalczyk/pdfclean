@@ -42,6 +42,23 @@ else
     files=("${args[@]}")
 fi
 
+# Deduplicate, warning on repeats
+seen=()
+unique_files=()
+for f in "${files[@]}"; do
+    already=0
+    for s in "${seen[@]}"; do
+        [ "$s" = "$f" ] && already=1 && break
+    done
+    if [ "$already" -eq 1 ]; then
+        echo "Warning: '$f' specified more than once, skipping duplicate"
+    else
+        seen+=("$f")
+        unique_files+=("$f")
+    fi
+done
+files=("${unique_files[@]}")
+
 echo "Files to process: ${files[@]}"
 
 n=${#files[@]}
