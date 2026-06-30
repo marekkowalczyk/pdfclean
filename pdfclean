@@ -1,40 +1,84 @@
 #!/usr/bin/env bash
 
-# Check if any arguments were provided
-if [ -z "$1" ]; then
+VERSION="0.1.0"
+
+usage() {
+    cat <<EOF
+Usage: pdfclean [OPTIONS] [FILE...]
+
+Compress PDF files in-place using cpdfsqueeze. If no files are given,
+processes all *.pdf files in the current directory.
+
+Options:
+  --dry-run     Report what would be compressed without modifying files
+  --version     Print version and exit
+  --help        Print this help and exit
+
+Examples:
+  pdfclean                    # compress all *.pdf in current dir
+  pdfclean a.pdf b.pdf        # compress specific files
+  pdfclean --dry-run *.pdf    # preview without changing files
+EOF
+}
+
+dry_run=0
+
+# Parse flags
+args=()
+for arg in "$@"; do
+    case "$arg" in
+        --help)    usage; exit 0 ;;
+        --version) echo "pdfclean $VERSION"; exit 0 ;;
+        --dry-run) dry_run=1 ;;
+        *)         args+=("$arg") ;;
+    esac
+done
+
+# Determine file list
+if [ ${#args[@]} -eq 0 ]; then
     files=( *.pdf )
     echo "No argument supplied, assuming '*.pdf'"
 else
-    files=("$@")
+    files=("${args[@]}")
 fi
 
-# Display files to be processed
 echo "Files to process: ${files[@]}"
 
-# Count total files correctly
 n=${#files[@]}
 
-# Process each file
 for ((i=1; i<=n; i++)); do
     file="${files[i-1]}"
-    
-    # Skip if file doesn't exist
+
     if [ ! -f "$file" ]; then
         echo "Warning: '$file' not found, skipping..."
         continue
     fi
-    
-    # Print progress with inverted colors
+
     printf "\033[7m\nProcessing %s (%d of %d)\033[27m\n" "${file}" $i $n
-    
-    # Get initial size
+
     initial_size=$(stat -f%z "$file" 2>/dev/null || stat --format="%s" "$file")
-    
-    # Compress the PDF
+
+    if [ "$dry_run" -eq 1 ]; then
+        if cpdfsqueeze "${file}" "${file}.tmp" 2>/dev/null; then
+            final_size=$(stat -f%z "${file}.tmp" 2>/dev/null || stat --format="%s" "${file}.tmp")
+            rm "${file}.tmp"
+            if [ "$final_size" -lt "$initial_size" ]; then
+                reduction=$((initial_size - final_size))
+                percent=$(awk "BEGIN {printf \"%.1f\", ($reduction / $initial_size) * 100}")
+                echo "[dry-run] Would reduce by $reduction bytes ($percent%)"
+            else
+                echo "[dry-run] No size reduction would be achieved"
+            fi
+        else
+            [ -f "${file}.tmp" ] && rm "${file}.tmp"
+            echo "[dry-run] cpdfsqueeze failed on '$file'"
+        fi
+        continue
+    fi
+
     if cpdfsqueeze "${file}" "${file}.tmp"; then
         final_size=$(stat -f%z "${file}.tmp" 2>/dev/null || stat --format="%s" "${file}.tmp")
-        
-        # Only replace if the file actually got smaller
+
         if [ "$final_size" -lt "$initial_size" ]; then
             mv "${file}.tmp" "${file}"
             reduction=$((initial_size - final_size))

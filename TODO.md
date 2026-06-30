@@ -12,9 +12,9 @@ Status key: `[ ]` todo, `[x]` done, `[~]` in progress, `[-]` dropped
 - [x] Add CLAUDE.md and README.md
 - [x] Write VISION.md
 - [x] Write TODO.md
-- [ ] Add LICENSE file (MIT)
-- [ ] Add --help and --version flags
-- [ ] Add --dry-run flag (report sizes without compressing)
+- [x] Add LICENSE file (MIT)
+- [x] Add --help and --version flags
+- [x] Add --dry-run flag (report sizes without compressing)
 
 ## M1: Multi-backend compression
 
