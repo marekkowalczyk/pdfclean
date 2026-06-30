@@ -14,7 +14,18 @@ Status key: `[ ]` todo, `[x]` done, `[~]` in progress, `[-]` dropped
 - [x] Write TODO.md
 - [x] Add LICENSE file (MIT)
 - [x] Add --help and --version flags
-- [x] Add --dry-run flag (report sizes without compressing)
+- [x] Add --dry-run / -n flag (report sizes without compressing)
+- [x] Unix citizenship: exit codes, stderr for errors/warnings
+- [x] Unix citizenship: TTY check for ANSI codes
+- [x] Unix citizenship: --quiet / -q mode
+- [x] Unix citizenship: -- end-of-options marker
+- [x] Unix citizenship: short flags (-a, -n, -q)
+- [x] Unix citizenship: mktemp in source dir + trap for cleanup
+- [x] No-argument error; . / --all / -a for current directory
+- [x] Match *.PDF in addition to *.pdf
+- [x] Warn and skip duplicate filenames
+- [x] bats test suite (24 tests, mock cpdfsqueeze)
+- [x] Move developer docs to dev/
 
 ## M1: Multi-backend compression
 
@@ -41,7 +52,7 @@ Status key: `[ ]` todo, `[x]` done, `[~]` in progress, `[-]` dropped
 ## M4: Polish
 
 - [ ] Summary stats at end of batch run (total saved, best/worst file)
-- [ ] Quiet mode (--quiet / -q)
+- [x] Quiet mode (--quiet / -q) — done in M0
 - [ ] Verbose mode (--verbose / -v) with per-backend results
 - [ ] Test on Linux (stat, gs flags, etc.)
 - [ ] Write man page or extended --help
