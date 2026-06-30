@@ -5,20 +5,33 @@ Batch PDF compression tool. Compresses PDF files in-place, keeping the original 
 ## Usage
 
 ```bash
-# Compress specific files
-pdfclean report.pdf presentation.pdf
-
-# Compress all PDFs in current directory
-pdfclean
+pdfclean .                        # compress all *.pdf / *.PDF in current directory
+pdfclean -a                       # same
+pdfclean report.pdf notes.pdf     # compress specific files
+pdfclean -n .                     # dry-run: report what would change, modify nothing
+pdfclean -q .                     # quiet: no output unless there's an error
+pdfclean -- -oddly-named.pdf      # use -- to pass filenames starting with -
 ```
+
+## Options
+
+| Flag | Long form | Description |
+|------|-----------|-------------|
+| `.` or `-a` | `--all` | Process all `*.pdf` / `*.PDF` in current directory |
+| `-n` | `--dry-run` | Report sizes without modifying files |
+| `-q` | `--quiet` | Suppress all non-error output |
+| | `--version` | Print version and exit |
+| | `--help` | Print help and exit |
+| `--` | | End of options; treat remaining args as filenames |
 
 ## Installation
 
-1. Clone this repo
-2. Symlink to your PATH:
-   ```bash
-   ln -s /path/to/pdfclean/pdfclean /usr/local/bin/pdfclean
-   ```
+```bash
+git clone https://github.com/marekkowalczyk/pdfclean.git
+ln -s "$PWD/pdfclean/pdfclean" /usr/local/bin/pdfclean
+```
+
+Or install the full [pdftools](https://github.com/marekkowalczyk/pdftools) suite.
 
 ## Requirements
 
@@ -29,11 +42,20 @@ pdfclean
 
 For each PDF file:
 
-1. Compresses to a temporary file using `cpdfsqueeze`
+1. Compresses to a temp file (via `mktemp`) in the same directory as the source
 2. Compares sizes — replaces the original only if the result is smaller
 3. Reports the reduction in bytes and percentage
+4. Cleans up the temp file on exit, even if interrupted
 
-No data is lost. If compression doesn't help, the original is kept unchanged.
+No data is ever lost. If compression doesn't help, the original is kept unchanged.
+
+## Testing
+
+```bash
+bats tests/pdfclean.bats
+```
+
+24 tests using mock `cpdfsqueeze` binaries — no real PDFs required.
 
 ## License
 
