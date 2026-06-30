@@ -4,20 +4,23 @@ VERSION="0.1.0"
 
 usage() {
     cat <<EOF
-Usage: pdfclean [OPTIONS] [FILE...]
+Usage: pdfclean [OPTIONS] [FILE... | . | --all]
 
-Compress PDF files in-place using cpdfsqueeze. If no files are given,
-processes all *.pdf files in the current directory.
+Compress PDF files in-place using cpdfsqueeze.
 
 Options:
+  --all, -a     Process all *.pdf files in the current directory
   --dry-run     Report what would be compressed without modifying files
   --version     Print version and exit
   --help        Print this help and exit
 
+Passing . is equivalent to --all.
+
 Examples:
-  pdfclean                    # compress all *.pdf in current dir
-  pdfclean a.pdf b.pdf        # compress specific files
-  pdfclean --dry-run *.pdf    # preview without changing files
+  pdfclean .              # compress all *.pdf in current dir
+  pdfclean -a             # same
+  pdfclean a.pdf b.pdf    # compress specific files
+  pdfclean --dry-run .    # preview without changing files
 EOF
 }
 
@@ -26,19 +29,31 @@ exit_code=0
 
 # Parse flags
 args=()
+all=0
 for arg in "$@"; do
     case "$arg" in
-        --help)    usage; exit 0 ;;
-        --version) echo "pdfclean $VERSION"; exit 0 ;;
-        --dry-run) dry_run=1 ;;
-        *)         args+=("$arg") ;;
+        --help)       usage; exit 0 ;;
+        --version)    echo "pdfclean $VERSION"; exit 0 ;;
+        --dry-run)    dry_run=1 ;;
+        --all|-a|.)   all=1 ;;
+        *)            args+=("$arg") ;;
     esac
 done
 
 # Determine file list
-if [ ${#args[@]} -eq 0 ]; then
+if [ "$all" -eq 1 ] && [ ${#args[@]} -gt 0 ]; then
+    echo "Error: cannot combine . / --all with explicit filenames" >&2
+    exit 1
+elif [ "$all" -eq 1 ]; then
     files=( *.pdf )
-    echo "No argument supplied, assuming '*.pdf'"
+    if [ ${#files[@]} -eq 0 ] || [ "${files[0]}" = "*.pdf" ]; then
+        echo "Error: no PDF files found in current directory" >&2
+        exit 1
+    fi
+elif [ ${#args[@]} -eq 0 ]; then
+    echo "Error: no files specified. Use '.' or '--all' to process all PDFs in the current directory." >&2
+    usage >&2
+    exit 1
 else
     files=("${args[@]}")
 fi
