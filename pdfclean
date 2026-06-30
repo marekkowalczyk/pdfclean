@@ -9,7 +9,7 @@ Usage: pdfclean [OPTIONS] [FILE... | . | --all]
 Compress PDF files in-place using cpdfsqueeze.
 
 Options:
-  --all, -a     Process all *.pdf files in the current directory
+  --all, -a     Process all *.pdf / *.PDF files in the current directory
   --dry-run     Report what would be compressed without modifying files
   --version     Print version and exit
   --help        Print this help and exit
@@ -17,7 +17,7 @@ Options:
 Passing . is equivalent to --all.
 
 Examples:
-  pdfclean .              # compress all *.pdf in current dir
+  pdfclean .              # compress all *.pdf / *.PDF in current dir
   pdfclean -a             # same
   pdfclean a.pdf b.pdf    # compress specific files
   pdfclean --dry-run .    # preview without changing files
@@ -45,8 +45,15 @@ if [ "$all" -eq 1 ] && [ ${#args[@]} -gt 0 ]; then
     echo "Error: cannot combine . / --all with explicit filenames" >&2
     exit 1
 elif [ "$all" -eq 1 ]; then
-    files=( *.pdf )
-    if [ ${#files[@]} -eq 0 ] || [ "${files[0]}" = "*.pdf" ]; then
+    files=( *.pdf *.PDF )
+    # Remove unmatched globs (bash leaves them literal when nullglob is off)
+    files=( "${files[@]}" )
+    expanded=()
+    for f in "${files[@]}"; do
+        [ -f "$f" ] && expanded+=("$f")
+    done
+    files=("${expanded[@]}")
+    if [ ${#files[@]} -eq 0 ]; then
         echo "Error: no PDF files found in current directory" >&2
         exit 1
     fi
