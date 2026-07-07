@@ -13,7 +13,7 @@ Options:
   --dry-run, -n    Report what would be compressed without modifying files
   --quiet, -q      Suppress all non-error output
   --version        Print version and exit
-  --help           Print this help and exit
+  --help, -h       Print this help and exit
   --               End of options; remaining args treated as filenames
 
 Passing . is equivalent to --all.
@@ -42,7 +42,7 @@ for arg in "$@"; do
         continue
     fi
     case "$arg" in
-        --help)          usage; exit 0 ;;
+        --help|-h)       usage; exit 0 ;;
         --version)       echo "pdfclean $VERSION"; exit 0 ;;
         --dry-run|-n)    dry_run=1 ;;
         --quiet|-q)      quiet=1 ;;
