@@ -92,16 +92,13 @@ for f in "${files[@]}"; do
 done
 files=("${unique_files[@]}")
 
-n=${#files[@]}
 tmpfile=""
 
 # Clean up temp file on exit/interrupt
 cleanup() { [ -n "$tmpfile" ] && rm -f "$tmpfile"; }
 trap cleanup INT TERM EXIT
 
-for ((i=1; i<=n; i++)); do
-    file="${files[i-1]}"
-
+for file in "${files[@]}"; do
     # Normalize filenames starting with - so tools don't treat them as flags
     [[ "$file" == -* ]] && file="./$file"
 
@@ -134,8 +131,7 @@ for ((i=1; i<=n; i++)); do
         continue
     fi
 
-    cpdfsqueeze "${file}" "$tmpfile" >/dev/null 2>&1
-    if [ $? -eq 0 ]; then
+    if cpdfsqueeze "${file}" "$tmpfile" >/dev/null 2>&1; then
         final_size=$(stat -f%z "$tmpfile" 2>/dev/null || stat --format="%s" "$tmpfile")
 
         if [ "$final_size" -lt "$initial_size" ]; then
