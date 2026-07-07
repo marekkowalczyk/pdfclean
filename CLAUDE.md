@@ -33,6 +33,10 @@ Single bash script: `pdfclean`. Symlinked from `/usr/local/bin/pdfclean`.
 - All errors and warnings go to stderr; exit code reflects any failures.
 - Output is minimal by Unix convention: only report files that were actually compressed. Silent on non-events. Errors prefixed with `pdfclean:`.
 
+## Suite
+
+`pdfclean` is part of the [pdftools](https://github.com/marekkowalczyk/pdftools) suite. Cross-tool CLI and Unix citizenship conventions are documented in [pdftools/CONVENTIONS.md](https://github.com/marekkowalczyk/pdftools/blob/master/CONVENTIONS.md). Design decisions here should stay consistent with those conventions.
+
 ## Key documents
 
 - **dev/VISION.md** — where the project is headed, success criteria, open questions. Read before proposing new features.
