@@ -125,9 +125,9 @@ for ((i=1; i<=n; i++)); do
             if [ "$final_size" -lt "$initial_size" ]; then
                 reduction=$((initial_size - final_size))
                 percent=$(awk "BEGIN {printf \"%.1f\", ($reduction / $initial_size) * 100}")
-                log "[dry-run] Would reduce by $reduction bytes ($percent%)"
+                log "$file: [dry-run] would reduce by $reduction bytes ($percent%)"
             else
-                log "[dry-run] No size reduction would be achieved"
+                log "$file: [dry-run] no size reduction would be achieved"
             fi
         else
             echo "Error: cpdfsqueeze failed on '$file'" >&2
@@ -147,11 +147,11 @@ for ((i=1; i<=n; i++)); do
             tmpfile=""
             reduction=$((initial_size - final_size))
             percent=$(awk "BEGIN {printf \"%.1f\", ($reduction / $initial_size) * 100}")
-            log "Compressed: reduced by $reduction bytes ($percent%)"
+            log "$file: reduced by $reduction bytes ($percent%)"
         else
             rm -f "$tmpfile"
             tmpfile=""
-            log "No size reduction achieved - keeping original file"
+            log "$file: no size reduction, keeping original"
         fi
     else
         echo "Error: Failed to compress '$file'" >&2
