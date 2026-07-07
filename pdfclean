@@ -136,6 +136,10 @@ for file in "${files[@]}"; do
 
         if [ "$final_size" -lt "$initial_size" ]; then
             chmod "$(stat -f%Mp%Lp "$file" 2>/dev/null || stat --format="%a" "$file")" "$tmpfile"
+            # Preserve extended attributes (Finder tags, Spotlight comments, etc.)
+            while IFS= read -r attr; do
+                [ -n "$attr" ] && xattr -wx "$attr" "$(xattr -px "$attr" "$file")" "$tmpfile" 2>/dev/null
+            done < <(xattr "$file" 2>/dev/null)
             mv "$tmpfile" "${file}"
             tmpfile=""
             reduction=$((initial_size - final_size))
