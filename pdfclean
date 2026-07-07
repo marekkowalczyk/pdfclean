@@ -43,7 +43,14 @@ for arg in "$@"; do
     fi
     case "$arg" in
         --help|-h)       usage; exit 0 ;;
-        --version)       echo "pdfclean $VERSION"; exit 0 ;;
+        --version)
+            echo "pdfclean $VERSION"
+            if command -v cpdfsqueeze >/dev/null 2>&1; then
+                cpdfsqueeze --version 2>&1 | head -1
+            else
+                echo "cpdfsqueeze: not found" >&2
+            fi
+            exit 0 ;;
         --dry-run|-n)    dry_run=1 ;;
         --quiet|-q)      quiet=1 ;;
         --all|-a|.)      all=1 ;;

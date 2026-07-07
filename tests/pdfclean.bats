@@ -75,7 +75,7 @@ setup() {
 @test "no args exits 1 and prints error to stderr" {
     run "$SCRIPT"
     [ "$status" -eq 1 ]
-    [[ "$output" == *"Error:"* ]]
+    [[ "$output" == *"pdfclean:"* ]]
 }
 
 # ---------------------------------------------------------------------------
@@ -93,13 +93,13 @@ setup() {
 # ---------------------------------------------------------------------------
 
 @test "duplicate filename warned and processed once" {
-    setup_mock_cpdf_noreduce
+    setup_mock_cpdf_reduce
     make_pdf a.pdf
     run "$SCRIPT" a.pdf a.pdf
     [ "$status" -eq 0 ]
     [[ "$output" == *"more than once"* ]]
-    # "Processing" header should appear exactly once
-    count=$(echo "$output" | grep -c "Processing a.pdf")
+    # Reduction report should appear exactly once
+    count=$(echo "$output" | grep -c "reduced by")
     [ "$count" -eq 1 ]
 }
 
@@ -108,7 +108,7 @@ setup() {
 # ---------------------------------------------------------------------------
 
 @test ". picks up *.pdf files" {
-    setup_mock_cpdf_noreduce
+    setup_mock_cpdf_reduce
     make_pdf one.pdf
     make_pdf two.pdf
     run "$SCRIPT" .
@@ -118,7 +118,7 @@ setup() {
 }
 
 @test "--all is equivalent to ." {
-    setup_mock_cpdf_noreduce
+    setup_mock_cpdf_reduce
     make_pdf one.pdf
     run "$SCRIPT" --all
     [ "$status" -eq 0 ]
@@ -126,7 +126,7 @@ setup() {
 }
 
 @test "-a is equivalent to ." {
-    setup_mock_cpdf_noreduce
+    setup_mock_cpdf_reduce
     make_pdf one.pdf
     run "$SCRIPT" -a
     [ "$status" -eq 0 ]
@@ -134,7 +134,7 @@ setup() {
 }
 
 @test ". picks up *.PDF files" {
-    setup_mock_cpdf_noreduce
+    setup_mock_cpdf_reduce
     make_pdf UPPER.PDF
     run "$SCRIPT" .
     [ "$status" -eq 0 ]
@@ -159,7 +159,7 @@ setup() {
 # ---------------------------------------------------------------------------
 
 @test "-- allows filename starting with -" {
-    setup_mock_cpdf_noreduce
+    setup_mock_cpdf_reduce
     make_pdf "-odd.pdf"
     run "$SCRIPT" -- -odd.pdf
     [ "$status" -eq 0 ]
@@ -193,15 +193,15 @@ setup() {
     make_pdf a.pdf
     run "$SCRIPT" --dry-run a.pdf
     [ "$status" -eq 0 ]
-    [[ "$output" == *"[dry-run] Would reduce"* ]]
+    [[ "$output" == *"would reduce"* ]]
 }
 
-@test "--dry-run reports no reduction when mock does not reduce" {
+@test "--dry-run is silent when mock does not reduce" {
     setup_mock_cpdf_noreduce
     make_pdf a.pdf
     run "$SCRIPT" --dry-run a.pdf
     [ "$status" -eq 0 ]
-    [[ "$output" == *"[dry-run] No size reduction"* ]]
+    [ -z "$output" ]
 }
 
 # ---------------------------------------------------------------------------
@@ -213,7 +213,7 @@ setup() {
     make_pdf a.pdf
     run "$SCRIPT" a.pdf
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Compressed"* ]]
+    [[ "$output" == *"reduced by"* ]]
     # File should now be 1 byte (what mock wrote)
     [ "$(wc -c < a.pdf | tr -d ' ')" -eq 1 ]
 }
@@ -224,7 +224,7 @@ setup() {
     original=$(cat a.pdf)
     run "$SCRIPT" a.pdf
     [ "$status" -eq 0 ]
-    [[ "$output" == *"No size reduction"* ]]
+    [ -z "$output" ]
     [ "$(cat a.pdf)" = "$original" ]
 }
 
@@ -233,7 +233,7 @@ setup() {
     make_pdf a.pdf
     run "$SCRIPT" a.pdf
     [ "$status" -eq 1 ]
-    [[ "$output" == *"Error:"* ]]
+    [[ "$output" == *"pdfclean:"* ]]
 }
 
 @test "no orphaned temp files after cpdfsqueeze failure" {
