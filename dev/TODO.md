@@ -26,6 +26,13 @@ Status key: `[ ]` todo, `[x]` done, `[~]` in progress, `[-]` dropped
 - [x] Warn and skip duplicate filenames
 - [x] bats test suite (24 tests, mock cpdfsqueeze)
 - [x] Move developer docs to dev/
+- [x] Unix citizenship: -h alias for --help
+- [x] Unix citizenship: progname-prefixed errors ('pdfclean: ...')
+- [x] Unix citizenship: silence non-events (no output when file unchanged)
+- [x] Unix citizenship: short hint on error instead of full usage block
+- [x] Unix citizenship: suppress backend stdout unconditionally
+- [x] Filename-prefixed result lines (gzip-style)
+- [x] Release v1.0.0
 
 ## M1: Multi-backend compression
 
