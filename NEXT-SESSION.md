@@ -2,16 +2,21 @@
 
 ## Completed last session ✓
 
-- [x] ~~Unix citizenship polish (verbosity, error format, -h, silence non-events)~~
-- [x] ~~Preserve file permissions after compression~~
-- [x] ~~Preserve extended attributes (Finder tags, Spotlight comments)~~
-- [x] ~~Released v1.1.0~~
+- [x] ~~`--version` shows cpdfsqueeze backend version~~
+- [x] ~~Fixed 16 stale bats tests (were testing for output strings the script never produced)~~
+- [x] ~~Tracked pre-commit hook: hooks/pre-commit + hooks/install.sh~~
+- [x] ~~Tagged and published v1.1.0 on GitHub~~
+- [x] ~~pdftools CONVENTIONS.md: cross-tool Unix citizenship standards~~
 
 ## Carried over
 
 - Decide: start M1 (multi-backend) in bash, or jump straight to Go rewrite
 - If staying in bash: audit available tools on the system (gs, qpdf, mutool, cpdfsqueeze) as first M1 task
 - Benchmark cpdfsqueeze on a set of real PDFs to establish a baseline before adding new backends
+
+## Start-of-session checklist
+
+Run `bats tests/pdfclean.bats` first — before writing any new code — to catch pre-existing failures early.
 
 ## Technical notes
 

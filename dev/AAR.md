@@ -2,6 +2,19 @@
 
 Continuous improvement log. Each session ends with a brief review: what went well, what didn't, what to change. This is the POOGI (Process Of Ongoing Improvement) record for this project.
 
+## 2026-07-07b — --version backend info, stale test fixes, pre-commit hooks, release, CONVENTIONS.md
+
+**What went well:**
+- `--version` backend discovery was clean: `cpdfsqueeze --version 2>&1 | head -1` neatly captured the version line despite the tool exiting non-zero
+- Pre-commit hook pattern (tracked hook + install script) is reusable across the whole suite — good that it landed in CONVENTIONS.md
+- CONVENTIONS.md distills pdfclean's hard-won patterns into a reference for the other tools before they drift
+
+**What didn't go well:**
+- The bats suite had 16 stale tests that were never actually passing — they tested for `"Error:"`, `"Compressed"`, `"Processing"`, etc. that the script never produced. The suite gave false confidence for an unknown period of time.
+
+**What we'll do differently:**
+- Run `bats tests/` at the *start* of a session to surface pre-existing failures before writing new code
+
 ## 2026-07-07 — Unix citizenship polish, permissions and xattr preservation, v1.1.0
 
 **What went well:**

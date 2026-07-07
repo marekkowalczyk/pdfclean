@@ -36,6 +36,10 @@ Status key: `[ ]` todo, `[x]` done, `[~]` in progress, `[-]` dropped
 - [x] Preserve file permissions after compression
 - [x] Preserve extended attributes (Finder tags, Spotlight comments) after compression
 - [x] Release v1.1.0
+- [x] --version shows cpdfsqueeze backend version
+- [x] Tracked pre-commit hook (hooks/pre-commit + hooks/install.sh)
+- [x] Tag and publish v1.1.0 on GitHub
+- [x] pdftools CONVENTIONS.md (cross-tool Unix citizenship standards)
 
 ## M1: Multi-backend compression
 

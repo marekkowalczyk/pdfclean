@@ -20,7 +20,7 @@ pdfclean -- -oddly-named.pdf      # use -- to pass filenames starting with -
 | `.` or `-a` | `--all` | Process all `*.pdf` / `*.PDF` in current directory |
 | `-n` | `--dry-run` | Report sizes without modifying files |
 | `-q` | `--quiet` | Suppress all non-error output |
-| | `--version` | Print version and exit |
+| | `--version` | Print version and backend version, then exit |
 | `-h` | `--help` | Print help and exit |
 | `--` | | End of options; treat remaining args as filenames |
 
