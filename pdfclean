@@ -27,12 +27,6 @@ Examples:
 EOF
 }
 
-# TTY check: use formatting only when stdout is a terminal
-if [ -t 1 ]; then
-    fmt_header() { printf "\033[7m\nProcessing %s (%d of %d)\033[27m\n" "$1" "$2" "$3"; }
-else
-    fmt_header() { printf "\nProcessing %s (%d of %d)\n" "$1" "$2" "$3"; }
-fi
 
 dry_run=0
 quiet=0
@@ -118,8 +112,6 @@ for ((i=1; i<=n; i++)); do
         exit_code=1
         continue
     fi
-
-    [ "$quiet" -eq 0 ] && fmt_header "${file}" $i $n
 
     initial_size=$(stat -f%z "$file" 2>/dev/null || stat --format="%s" "$file")
 
