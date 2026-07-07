@@ -1,5 +1,14 @@
 # Next Session
 
+## Completed last session ✓
+
+- [x] ~~Unix citizenship polish (verbosity, error format, -h, silence non-events)~~
+- [x] ~~Preserve file permissions after compression~~
+- [x] ~~Preserve extended attributes (Finder tags, Spotlight comments)~~
+- [x] ~~Released v1.1.0~~
+
+## Carried over
+
 - Decide: start M1 (multi-backend) in bash, or jump straight to Go rewrite
 - If staying in bash: audit available tools on the system (gs, qpdf, mutool, cpdfsqueeze) as first M1 task
 - Benchmark cpdfsqueeze on a set of real PDFs to establish a baseline before adding new backends
@@ -14,3 +23,8 @@ interleaving — concurrent jobs scramble output without per-job buffering;
 extra bookkeeping. For a typical handful-of-PDFs workload the gain is marginal
 anyway. In Go this would be trivial (goroutines + WaitGroup). Parallel
 processing is a mild argument for the Go rewrite.
+
+**Metadata preservation:** cpdfsqueeze overwrites the PDF `Producer` field —
+this is backend behaviour, nothing pdfclean can do about it. All other metadata
+(Title, Author, Creator, Create Date) is preserved. File permissions and xattrs
+are now explicitly preserved by pdfclean.
