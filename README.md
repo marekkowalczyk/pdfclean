@@ -50,7 +50,15 @@ For each PDF file:
 
 No data is ever lost. If compression doesn't help, the original is kept unchanged.
 
-## Testing
+## Development
+
+Install the pre-commit hook (runs the test suite before every commit):
+
+```bash
+bash hooks/install.sh
+```
+
+Run tests manually:
 
 ```bash
 bats tests/pdfclean.bats
