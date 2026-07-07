@@ -28,9 +28,10 @@ Single bash script: `pdfclean`. Symlinked from `/usr/local/bin/pdfclean`.
 ## Design decisions
 
 - Files are compressed to a `mktemp` file in the same directory as the source (same filesystem → atomic `mv`), swapped only if smaller. Temp file is cleaned up via `trap` on exit/interrupt.
+- Before the swap, file permissions and extended attributes (Finder tags, Spotlight comments) are copied from the original to the temp file.
 - No recursive directory walking by design. User controls which files are processed.
-- Progress output uses ANSI inverted colors, but only when stdout is a TTY.
 - All errors and warnings go to stderr; exit code reflects any failures.
+- Output is minimal by Unix convention: only report files that were actually compressed. Silent on non-events. Errors prefixed with `pdfclean:`.
 
 ## Key documents
 

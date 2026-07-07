@@ -33,6 +33,9 @@ Status key: `[ ]` todo, `[x]` done, `[~]` in progress, `[-]` dropped
 - [x] Unix citizenship: suppress backend stdout unconditionally
 - [x] Filename-prefixed result lines (gzip-style)
 - [x] Release v1.0.0
+- [x] Preserve file permissions after compression
+- [x] Preserve extended attributes (Finder tags, Spotlight comments) after compression
+- [x] Release v1.1.0
 
 ## M1: Multi-backend compression
 

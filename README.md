@@ -21,7 +21,7 @@ pdfclean -- -oddly-named.pdf      # use -- to pass filenames starting with -
 | `-n` | `--dry-run` | Report sizes without modifying files |
 | `-q` | `--quiet` | Suppress all non-error output |
 | | `--version` | Print version and exit |
-| | `--help` | Print help and exit |
+| `-h` | `--help` | Print help and exit |
 | `--` | | End of options; treat remaining args as filenames |
 
 ## Installation
@@ -44,8 +44,9 @@ For each PDF file:
 
 1. Compresses to a temp file (via `mktemp`) in the same directory as the source
 2. Compares sizes — replaces the original only if the result is smaller
-3. Reports the reduction in bytes and percentage
-4. Cleans up the temp file on exit, even if interrupted
+3. Copies file permissions and extended attributes (Finder tags, Spotlight comments) to the replacement
+4. Reports the reduction in bytes and percentage
+5. Cleans up the temp file on exit, even if interrupted
 
 No data is ever lost. If compression doesn't help, the original is kept unchanged.
 

@@ -2,6 +2,20 @@
 
 Continuous improvement log. Each session ends with a brief review: what went well, what didn't, what to change. This is the POOGI (Process Of Ongoing Improvement) record for this project.
 
+## 2026-07-07 — Unix citizenship polish, permissions and xattr preservation, v1.1.0
+
+**What went well:**
+- Systematic Unix citizenship audit produced clean, incremental commits — easy to review and revert individually
+- The "test before fixing" approach for permissions and xattrs caught real bugs with concrete evidence before touching code
+- Spotting `logf` dead code and the `$?` anti-pattern alongside the citizenship pass kept the cleanup focused
+
+**What didn't go well:**
+- Went slightly too far on verbosity reduction (dropped filenames from result lines), required a correction pass
+- CLAUDE.md still had the stale "ANSI inverted colors" design note — should have caught it during the session when removing that feature, not at close
+
+**What we'll do differently:**
+- When removing a feature, immediately search CLAUDE.md/README for references and update in the same commit
+
 ## 2026-06-30 — M0 complete: Unix citizenship, bats tests, pdftools suite
 
 **What went well:**
