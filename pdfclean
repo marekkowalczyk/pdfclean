@@ -100,8 +100,6 @@ for f in "${files[@]}"; do
 done
 files=("${unique_files[@]}")
 
-log "Files to process: ${files[*]}"
-
 n=${#files[@]}
 tmpfile=""
 
@@ -148,11 +146,7 @@ for ((i=1; i<=n; i++)); do
         continue
     fi
 
-    if [ "$quiet" -eq 1 ]; then
-        cpdfsqueeze "${file}" "$tmpfile" >/dev/null 2>&1
-    else
-        cpdfsqueeze "${file}" "$tmpfile"
-    fi
+    cpdfsqueeze "${file}" "$tmpfile" >/dev/null 2>&1
     if [ $? -eq 0 ]; then
         final_size=$(stat -f%z "$tmpfile" 2>/dev/null || stat --format="%s" "$tmpfile")
 
@@ -175,5 +169,4 @@ for ((i=1; i<=n; i++)); do
     fi
 done
 
-log "$(printf '\nProcessing completed for %d files' $n)"
 exit $exit_code
