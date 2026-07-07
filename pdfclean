@@ -52,12 +52,11 @@ for arg in "$@"; do
     esac
 done
 
-log()  { [ "$quiet" -eq 0 ] && echo "$@"; }
-logf() { [ "$quiet" -eq 0 ] && printf "$@"; }
+log() { [ "$quiet" -eq 0 ] && echo "$@"; }
 
 # Determine file list
 if [ "$all" -eq 1 ] && [ ${#args[@]} -gt 0 ]; then
-    echo "Error: cannot combine . / --all with explicit filenames" >&2
+    echo "pdfclean: cannot combine . / --all with explicit filenames" >&2
     exit 1
 elif [ "$all" -eq 1 ]; then
     expanded=()
@@ -66,12 +65,11 @@ elif [ "$all" -eq 1 ]; then
     done
     files=("${expanded[@]}")
     if [ ${#files[@]} -eq 0 ]; then
-        echo "Error: no PDF files found in current directory" >&2
+        echo "pdfclean: no PDF files found in current directory" >&2
         exit 1
     fi
 elif [ ${#args[@]} -eq 0 ]; then
-    echo "Error: no files specified. Use '.' or '--all' to process all PDFs in the current directory." >&2
-    usage >&2
+    echo "pdfclean: no files specified; try 'pdfclean --help'" >&2
     exit 1
 else
     files=("${args[@]}")
@@ -86,7 +84,7 @@ for f in "${files[@]}"; do
         [ "$s" = "$f" ] && already=1 && break
     done
     if [ "$already" -eq 1 ]; then
-        echo "Warning: '$f' specified more than once, skipping duplicate" >&2
+        echo "pdfclean: '$f' specified more than once, skipping duplicate" >&2
     else
         seen+=("$f")
         unique_files+=("$f")
@@ -108,7 +106,7 @@ for ((i=1; i<=n; i++)); do
     [[ "$file" == -* ]] && file="./$file"
 
     if [ ! -f "$file" ]; then
-        echo "Warning: '$file' not found, skipping..." >&2
+        echo "pdfclean: '$file' not found, skipping" >&2
         exit_code=1
         continue
     fi
@@ -126,11 +124,9 @@ for ((i=1; i<=n; i++)); do
                 reduction=$((initial_size - final_size))
                 percent=$(awk "BEGIN {printf \"%.1f\", ($reduction / $initial_size) * 100}")
                 log "$file: [dry-run] would reduce by $reduction bytes ($percent%)"
-            else
-                log "$file: [dry-run] no size reduction would be achieved"
             fi
         else
-            echo "Error: cpdfsqueeze failed on '$file'" >&2
+            echo "pdfclean: cpdfsqueeze failed on '$file'" >&2
             exit_code=1
         fi
         rm -f "$tmpfile"
@@ -151,10 +147,9 @@ for ((i=1; i<=n; i++)); do
         else
             rm -f "$tmpfile"
             tmpfile=""
-            log "$file: no size reduction, keeping original"
         fi
     else
-        echo "Error: Failed to compress '$file'" >&2
+        echo "pdfclean: failed to compress '$file'" >&2
         exit_code=1
         rm -f "$tmpfile"
         tmpfile=""
