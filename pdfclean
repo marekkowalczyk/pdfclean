@@ -135,6 +135,7 @@ for file in "${files[@]}"; do
         final_size=$(stat -f%z "$tmpfile" 2>/dev/null || stat --format="%s" "$tmpfile")
 
         if [ "$final_size" -lt "$initial_size" ]; then
+            chmod "$(stat -f%Mp%Lp "$file" 2>/dev/null || stat --format="%a" "$file")" "$tmpfile"
             mv "$tmpfile" "${file}"
             tmpfile=""
             reduction=$((initial_size - final_size))
