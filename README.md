@@ -35,7 +35,7 @@ Or install the full [pdftools](https://github.com/marekkowalczyk/pdftools) suite
 
 ## Requirements
 
-- [cpdf](https://github.com/johnwhitington/cpdf-source) (`cpdf -squeeze`, LGPL) — install via `brew install cpdf` or from [cpdf-binaries](https://github.com/johnwhitington/cpdf-binaries)
+- [cpdf](https://github.com/johnwhitington/cpdf-source) (`cpdf -squeeze`, LGPL) — install via `brew install cpdf` or prebuilt binaries from [coherentgraphics/cpdf-binaries](https://github.com/coherentgraphics/cpdf-binaries)
 - bash
 
 ## How it works
