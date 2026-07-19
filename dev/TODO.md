@@ -40,6 +40,9 @@ Status key: `[ ]` todo, `[x]` done, `[~]` in progress, `[-]` dropped
 - [x] Tracked pre-commit hook (hooks/pre-commit + hooks/install.sh)
 - [x] Tag and publish v1.1.0 on GitHub
 - [x] pdftools CONVENTIONS.md (cross-tool Unix citizenship standards)
+- [x] Switch backend from commercial cpdfsqueeze to open-source cpdf -squeeze
+- [x] Makefile with install/uninstall/test/deps targets
+- [x] Release v1.2.0
 
 ## M1: Multi-backend compression
 
