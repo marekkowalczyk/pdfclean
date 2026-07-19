@@ -28,8 +28,17 @@ pdfclean -- -oddly-named.pdf      # use -- to pass filenames starting with -
 
 ```bash
 git clone https://github.com/marekkowalczyk/pdfclean.git
-ln -s "$PWD/pdfclean/pdfclean" /usr/local/bin/pdfclean
+cd pdfclean
+sudo make install
 ```
+
+Installs a symlink to `pdfclean` in `/usr/local/bin`. Override the location with `PREFIX`:
+
+```bash
+make install PREFIX="$HOME/.local"
+```
+
+Uninstall with `sudo make uninstall` (or `make uninstall PREFIX=...` to match).
 
 Or install the full [pdftools](https://github.com/marekkowalczyk/pdftools) suite.
 
