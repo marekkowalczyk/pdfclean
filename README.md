@@ -29,6 +29,7 @@ pdfclean -- -oddly-named.pdf      # use -- to pass filenames starting with -
 ```bash
 git clone https://github.com/marekkowalczyk/pdfclean.git
 cd pdfclean
+make deps        # optional: brew install cpdf
 sudo make install
 ```
 

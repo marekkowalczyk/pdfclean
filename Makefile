@@ -1,7 +1,10 @@
 PREFIX ?= /usr/local
 BINDIR := $(DESTDIR)$(PREFIX)/bin
 
-.PHONY: install uninstall test
+.PHONY: install uninstall test deps
+
+deps:
+	brew install cpdf
 
 install:
 	install -d "$(BINDIR)"
