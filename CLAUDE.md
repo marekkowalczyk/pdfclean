@@ -1,6 +1,6 @@
 # pdfclean
 
-PDF compression wrapper. Currently uses `cpdfsqueeze` as its backend.
+PDF compression wrapper. Currently uses `cpdf -squeeze` as its backend.
 
 ## Start/End
 
@@ -10,7 +10,7 @@ Every session begins with `/start` and ends with `/close`.
 
 - Accepts one or more PDF files as arguments; `.` / `--all` / `-a` processes all `*.pdf` / `*.PDF` in the current directory
 - Errors if called with no arguments
-- Compresses each file in-place using `cpdfsqueeze`
+- Compresses each file in-place using `cpdf -squeeze`
 - Only replaces the original if the compressed version is actually smaller
 - Reports per-file size reduction (bytes and percentage)
 - Warns and skips duplicate filenames
@@ -21,7 +21,7 @@ Single bash script: `pdfclean`. Symlinked from `/usr/local/bin/pdfclean`.
 
 ## Dependencies
 
-- `cpdfsqueeze` (commercial, must be installed separately)
+- `cpdf` (LGPL, must be installed separately — `brew install cpdf`)
 - `awk` (for percentage calculation)
 - `stat` (macOS `stat -f%z` with Linux `stat --format="%s"` fallback)
 

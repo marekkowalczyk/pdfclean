@@ -6,7 +6,7 @@ usage() {
     cat <<EOF
 Usage: pdfclean [OPTIONS] [-- ] [FILE... | . | --all]
 
-Compress PDF files in-place using cpdfsqueeze.
+Compress PDF files in-place using cpdf -squeeze.
 
 Options:
   --all, -a        Process all *.pdf / *.PDF files in the current directory
@@ -45,10 +45,10 @@ for arg in "$@"; do
         --help|-h)       usage; exit 0 ;;
         --version)
             echo "pdfclean $VERSION"
-            if command -v cpdfsqueeze >/dev/null 2>&1; then
-                cpdfsqueeze --version 2>&1 | head -1
+            if command -v cpdf >/dev/null 2>&1; then
+                cpdf -version 2>&1 | head -1
             else
-                echo "cpdfsqueeze: not found" >&2
+                echo "cpdf: not found" >&2
             fi
             exit 0 ;;
         --dry-run|-n)    dry_run=1 ;;
@@ -122,7 +122,7 @@ for file in "${files[@]}"; do
     tmpfile=$(mktemp "${dir}/.pdfclean.XXXXXX")
 
     if [ "$dry_run" -eq 1 ]; then
-        if cpdfsqueeze "${file}" "$tmpfile" >/dev/null 2>&1; then
+        if cpdf -squeeze "${file}" -o "$tmpfile" >/dev/null 2>&1; then
             final_size=$(stat -f%z "$tmpfile" 2>/dev/null || stat --format="%s" "$tmpfile")
             if [ "$final_size" -lt "$initial_size" ]; then
                 reduction=$((initial_size - final_size))
@@ -130,7 +130,7 @@ for file in "${files[@]}"; do
                 log "$file: [dry-run] would reduce by $reduction bytes ($percent%)"
             fi
         else
-            echo "pdfclean: cpdfsqueeze failed on '$file'" >&2
+            echo "pdfclean: cpdf -squeeze failed on '$file'" >&2
             exit_code=1
         fi
         rm -f "$tmpfile"
@@ -138,7 +138,7 @@ for file in "${files[@]}"; do
         continue
     fi
 
-    if cpdfsqueeze "${file}" "$tmpfile" >/dev/null 2>&1; then
+    if cpdf -squeeze "${file}" -o "$tmpfile" >/dev/null 2>&1; then
         final_size=$(stat -f%z "$tmpfile" 2>/dev/null || stat --format="%s" "$tmpfile")
 
         if [ "$final_size" -lt "$initial_size" ]; then

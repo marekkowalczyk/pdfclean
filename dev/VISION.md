@@ -2,7 +2,7 @@
 
 ## Where we are
 
-A single bash script that wraps `cpdfsqueeze` (a commercial, closed-source PDF optimizer). It works well for personal use:
+A single bash script that wraps `cpdf -squeeze` (an open-source, LGPL PDF optimizer). It works well for personal use:
 
 - Batch-compresses PDFs in-place
 - Safe: only replaces originals when compression actually helps
@@ -10,15 +10,14 @@ A single bash script that wraps `cpdfsqueeze` (a commercial, closed-source PDF o
 
 **Limitations of the current state:**
 
-- Cannot be distributed — depends on a commercial binary
-- Single compression strategy — whatever cpdfsqueeze decides to do
+- Single compression strategy — whatever `cpdf -squeeze` decides to do
 - No control over compression aggressiveness
 - No insight into *why* a PDF is large (images? fonts? metadata?)
 - No CLI niceties (--help, --version, --dry-run)
 
 ## Where we want to go
 
-A freely distributable, open-source PDF optimization tool that is **better than any single backend** by intelligently combining multiple open-source tools.
+A PDF optimization tool that is **better than any single backend** by intelligently combining multiple open-source tools.
 
 ### Core idea
 
@@ -46,8 +45,7 @@ No single PDF optimizer wins on every file. Ghostscript is best for some PDFs, q
 
 ### Success criteria
 
-- Matches or beats cpdfsqueeze on the majority of real-world PDFs
-- Zero commercial dependencies
+- Matches or beats `cpdf -squeeze` on the majority of real-world PDFs
 - Installable via a single `git clone` + symlink (or brew eventually)
 - Works on macOS and Linux
 
@@ -94,7 +92,7 @@ Use both, each where it's strongest:
 
 ## Open questions
 
-- Should we keep cpdfsqueeze as an optional backend for users who have it?
+- Should we keep `cpdf -squeeze` as an optional backend alongside gs/qpdf/mutool?
 - What's the right default image quality for lossy mode?
 - Do we need a config file, or are CLI flags enough?
 - When (if ever) do we need direct PDF object access beyond what gs/qpdf/mutool provide?

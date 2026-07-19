@@ -35,7 +35,7 @@ Or install the full [pdftools](https://github.com/marekkowalczyk/pdftools) suite
 
 ## Requirements
 
-- [cpdfsqueeze](https://www.coherentpdf.com/cpdfsqueeze/) (commercial PDF optimizer)
+- [cpdf](https://github.com/johnwhitington/cpdf-source) (`cpdf -squeeze`, LGPL) — install via `brew install cpdf` or from [cpdf-binaries](https://github.com/johnwhitington/cpdf-binaries)
 - bash
 
 ## How it works
@@ -64,7 +64,7 @@ Run tests manually:
 bats tests/pdfclean.bats
 ```
 
-24 tests using mock `cpdfsqueeze` binaries — no real PDFs required.
+24 tests using mock `cpdf` binaries — no real PDFs required.
 
 ## License
 

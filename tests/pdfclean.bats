@@ -13,35 +13,36 @@ make_pdf() {
     printf '%%PDF-1.4\n1 0 obj\n<</Type /Catalog>>\nendobj\ntrailer\n<</Root 1 0 R>>\n%%%%EOF\n' > "$name"
 }
 
-# Install a mock cpdfsqueeze on PATH that copies input to output (no reduction)
+# Install a mock cpdf on PATH that copies input to output (no reduction)
+# Invoked as: cpdf -squeeze <input> -o <output>
 setup_mock_cpdf_noreduce() {
-    cat > "$BATS_TEST_TMPDIR/cpdfsqueeze" <<'EOF'
+    cat > "$BATS_TEST_TMPDIR/cpdf" <<'EOF'
 #!/usr/bin/env bash
 # Mock: copies input to output unchanged (no size reduction)
-cp -- "$1" "$2"
+cp -- "$2" "$4"
 EOF
-    chmod +x "$BATS_TEST_TMPDIR/cpdfsqueeze"
+    chmod +x "$BATS_TEST_TMPDIR/cpdf"
     export PATH="$BATS_TEST_TMPDIR:$PATH"
 }
 
-# Install a mock cpdfsqueeze that produces a smaller output
+# Install a mock cpdf that produces a smaller output
 setup_mock_cpdf_reduce() {
-    cat > "$BATS_TEST_TMPDIR/cpdfsqueeze" <<'EOF'
+    cat > "$BATS_TEST_TMPDIR/cpdf" <<'EOF'
 #!/usr/bin/env bash
 # Mock: writes a single byte (guaranteed smaller than any real PDF)
-printf 'x' > "$2"
+printf 'x' > "$4"
 EOF
-    chmod +x "$BATS_TEST_TMPDIR/cpdfsqueeze"
+    chmod +x "$BATS_TEST_TMPDIR/cpdf"
     export PATH="$BATS_TEST_TMPDIR:$PATH"
 }
 
-# Install a mock cpdfsqueeze that always fails
+# Install a mock cpdf that always fails
 setup_mock_cpdf_fail() {
-    cat > "$BATS_TEST_TMPDIR/cpdfsqueeze" <<'EOF'
+    cat > "$BATS_TEST_TMPDIR/cpdf" <<'EOF'
 #!/usr/bin/env bash
 exit 1
 EOF
-    chmod +x "$BATS_TEST_TMPDIR/cpdfsqueeze"
+    chmod +x "$BATS_TEST_TMPDIR/cpdf"
     export PATH="$BATS_TEST_TMPDIR:$PATH"
 }
 
@@ -228,7 +229,7 @@ setup() {
     [ "$(cat a.pdf)" = "$original" ]
 }
 
-@test "cpdfsqueeze failure exits 1 with error message" {
+@test "cpdf -squeeze failure exits 1 with error message" {
     setup_mock_cpdf_fail
     make_pdf a.pdf
     run "$SCRIPT" a.pdf
@@ -236,7 +237,7 @@ setup() {
     [[ "$output" == *"pdfclean:"* ]]
 }
 
-@test "no orphaned temp files after cpdfsqueeze failure" {
+@test "no orphaned temp files after cpdf -squeeze failure" {
     setup_mock_cpdf_fail
     make_pdf a.pdf
     run "$SCRIPT" a.pdf

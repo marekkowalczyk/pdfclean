@@ -24,7 +24,7 @@ Status key: `[ ]` todo, `[x]` done, `[~]` in progress, `[-]` dropped
 - [x] No-argument error; . / --all / -a for current directory
 - [x] Match *.PDF in addition to *.pdf
 - [x] Warn and skip duplicate filenames
-- [x] bats test suite (24 tests, mock cpdfsqueeze)
+- [x] bats test suite (24 tests, mock cpdf)
 - [x] Move developer docs to dev/
 - [x] Unix citizenship: -h alias for --help
 - [x] Unix citizenship: progname-prefixed errors ('pdfclean: ...')
@@ -36,18 +36,18 @@ Status key: `[ ]` todo, `[x]` done, `[~]` in progress, `[-]` dropped
 - [x] Preserve file permissions after compression
 - [x] Preserve extended attributes (Finder tags, Spotlight comments) after compression
 - [x] Release v1.1.0
-- [x] --version shows cpdfsqueeze backend version
+- [x] --version shows cpdf backend version
 - [x] Tracked pre-commit hook (hooks/pre-commit + hooks/install.sh)
 - [x] Tag and publish v1.1.0 on GitHub
 - [x] pdftools CONVENTIONS.md (cross-tool Unix citizenship standards)
 
 ## M1: Multi-backend compression
 
-- [ ] Audit available tools on the system (gs, qpdf, mutool, cpdfsqueeze)
+- [ ] Audit available tools on the system (gs, qpdf, mutool, cpdf)
 - [ ] Add Ghostscript compression path
 - [ ] Add qpdf optimization path
 - [ ] Run all available backends, keep smallest result
-- [ ] Make cpdfsqueeze optional (use if present, skip if not)
+- [ ] Make cpdf -squeeze optional (use if present, skip if not)
 - [ ] Benchmark: compare backends on a set of real PDFs
 
 ## M2: PDF analysis
