@@ -2,15 +2,16 @@
 
 ## Completed last session ✓
 
-- [x] ~~`--version` shows cpdf backend version~~
-- [x] ~~Switched backend from commercial `cpdfsqueeze` to open-source `cpdf -squeeze`~~
-- [x] ~~Fixed 16 stale bats tests (were testing for output strings the script never produced)~~
-- [x] ~~Tracked pre-commit hook: hooks/pre-commit + hooks/install.sh~~
-- [x] ~~Tagged and published v1.1.0 on GitHub~~
-- [x] ~~pdftools CONVENTIONS.md: cross-tool Unix citizenship standards~~
+- [x] ~~Switched backend from commercial `cpdfsqueeze` to open-source `cpdf -squeeze` (script, 24 bats tests, all docs updated)~~
+- [x] ~~Added `Makefile` with `install` / `uninstall` / `test` / `deps` targets, replacing manual `ln -s` instructions~~
+- [x] ~~`install` warns (doesn't fail) if `cpdf` isn't on `PATH`; `deps` optionally runs `brew install cpdf`, kept separate from `install` on purpose~~
+- [x] ~~Verified against `pdftools/CONVENTIONS.md` line by line — fully compliant~~
+- [x] ~~Bumped to v1.2.0, tagged, and published GitHub release~~
 
 ## Carried over
 
+- **Disk space is critically low on this machine** (~164Mi free / 99% full at last check) — caused a `brew install cpdf` failure mid-session. Not a pdfclean bug, but worth a cleanup pass before it breaks something else.
+- The `cpdf` binary currently installed on this machine came from a manual download to `~/Downloads`, not `brew`/`make deps` — works fine, but there's no record of its provenance/version pinning. Low priority; revisit if `make deps` becomes the norm.
 - Decide: start M1 (multi-backend) in bash, or jump straight to Go rewrite
 - If staying in bash: audit available tools on the system (gs, qpdf, mutool, cpdf) as first M1 task
 - Benchmark `cpdf -squeeze` on a set of real PDFs to establish a baseline before adding new backends
